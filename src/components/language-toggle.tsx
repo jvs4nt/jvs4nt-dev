@@ -27,7 +27,7 @@ export function LanguageToggle() {
     <div
       role="group"
       aria-label={content.ui.languageToggle.groupLabel}
-      className="relative flex items-center rounded-full border border-white/10 bg-white/[0.03] p-1"
+      className="relative flex items-center rounded-full border border-white/10 bg-white/[0.03] p-0.5 md:p-1"
     >
       {OPTIONS.map(({ locale: option, Flag }) => {
         const active = locale === option;
@@ -45,7 +45,7 @@ export function LanguageToggle() {
             onClick={() => {
               if (!active) setLocale(option);
             }}
-            className="relative z-[1] flex h-8 w-9 items-center justify-center rounded-full"
+            className="relative z-[1] flex h-7 w-7 items-center justify-center rounded-full md:h-8 md:w-9"
           >
             {active ? (
               <motion.span
@@ -67,7 +67,7 @@ export function LanguageToggle() {
               whileHover={reduceMotion ? undefined : { scale: 1.08, opacity: 1 }}
               transition={reduceMotion ? { duration: 0 } : { duration: 0.2 }}
             >
-              <Flag className="h-4 w-6 overflow-hidden rounded-[3px] shadow-[0_0_0_1px_rgba(255,255,255,0.12)]" />
+              <Flag className="h-3 w-[18px] overflow-hidden rounded-[3px] shadow-[0_0_0_1px_rgba(255,255,255,0.12)] md:h-4 md:w-6" />
             </motion.span>
           </button>
         );

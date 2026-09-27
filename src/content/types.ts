@@ -70,6 +70,9 @@ export type PortfolioContent = {
       pt: string;
       en: string;
     };
+    openMenu: string;
+    closeMenu: string;
+    mobileMenuAriaLabel: string;
     sections: {
       about: string;
       experience: string;

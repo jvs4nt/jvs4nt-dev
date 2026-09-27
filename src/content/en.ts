@@ -190,6 +190,9 @@ export const en: PortfolioContent = {
       pt: "Portuguese",
       en: "English",
     },
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
+    mobileMenuAriaLabel: "Navigation menu",
     sections: {
       about: "About",
       experience: "Experience",
