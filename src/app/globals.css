@@ -1,26 +1,129 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #07070b;
+  --foreground: #ededf5;
+  --muted: #9b9bb0;
+  --card: #101018;
+  --border: #1e1e2c;
+  --accent: #8b5cf6;
+  --accent-soft: rgb(139 92 246 / 0.18);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+body::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgb(139 92 246 / 0.16), transparent 55%),
+    radial-gradient(ellipse 40% 30% at 100% 20%, rgb(59 130 246 / 0.08), transparent 50%),
+    radial-gradient(ellipse 40% 30% at 0% 80%, rgb(139 92 246 / 0.08), transparent 50%);
+  z-index: 0;
+}
+
+@keyframes blur-in {
+  from {
+    opacity: 0;
+    filter: blur(14px);
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+.blur-in {
+  animation: blur-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--blur-in-delay, 0s);
+}
+
+.hero-vignette {
+  background:
+    linear-gradient(
+      to right,
+      #07070b 0%,
+      #07070b 5%,
+      transparent 24%,
+      transparent 76%,
+      #07070b 95%,
+      #07070b 100%
+    ),
+    linear-gradient(
+      to bottom,
+      #07070b 0%,
+      #07070b 7%,
+      transparent 24%,
+      transparent 58%,
+      #07070b 88%,
+      #07070b 100%
+    );
+}
+
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.marquee-track {
+  animation: marquee-left 28s linear infinite;
+}
+
+.marquee-track-reverse {
+  animation: marquee-right 32s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .blur-in {
+    animation: none;
+  }
+
+  .marquee-track {
+    animation-duration: 120s;
+  }
+
+  .marquee-track-reverse {
+    animation-duration: 132s;
+  }
 }
