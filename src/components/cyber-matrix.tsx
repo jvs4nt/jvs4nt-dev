@@ -16,16 +16,21 @@ export function CyberMatrix() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const host = canvas?.parentElement;
-    if (!canvas || !host) return;
+    const canvasEl = canvasRef.current;
+    const hostEl = canvasEl?.parentElement;
+    if (!canvasEl || !hostEl) return;
 
-    const ctx = canvas.getContext("2d", { alpha: true });
-    if (!ctx) return;
+    const renderCtx = canvasEl.getContext("2d", { alpha: true });
+    if (!renderCtx) return;
 
     const backdrop = document.createElement("canvas");
-    const back = backdrop.getContext("2d", { alpha: true });
-    if (!back) return;
+    const backdropCtx = backdrop.getContext("2d", { alpha: true });
+    if (!backdropCtx) return;
+
+    const canvas: HTMLCanvasElement = canvasEl;
+    const host: HTMLElement = hostEl;
+    const ctx: CanvasRenderingContext2D = renderCtx;
+    const back: CanvasRenderingContext2D = backdropCtx;
 
     const widthQuery = window.matchMedia("(max-width: 767px)");
     let mobile = widthQuery.matches;
