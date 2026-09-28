@@ -50,7 +50,7 @@ export function MobileNavMenu({
           role="dialog"
           aria-modal="true"
           aria-label={title}
-          className="fixed inset-0 z-[70] md:hidden"
+          className="fixed inset-0 z-[70] lg:hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -59,11 +59,11 @@ export function MobileNavMenu({
           <button
             type="button"
             aria-label={closeLabel}
-            className="absolute inset-0 bg-background/75 backdrop-blur-md"
+            className="absolute inset-0 bg-background/55 backdrop-blur-xl"
             onClick={onClose}
           />
 
-          <div className="relative flex h-full flex-col px-6 pb-10 pt-6">
+          <div className="relative flex h-full flex-col bg-white/[0.03] px-6 pb-10 pt-6">
             <button
               ref={closeRef}
               type="button"

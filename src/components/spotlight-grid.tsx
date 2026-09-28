@@ -1,49 +1,35 @@
 "use client";
 
-import { useState, type PointerEvent, type RefObject } from "react";
-
-export type GridPointer = { x: number; y: number };
+import type { PointerEvent } from "react";
 
 export function useGridPointer() {
-  const [pointer, setPointer] = useState<GridPointer>({ x: 0, y: 0 });
-  const [active, setActive] = useState(false);
-
   function onPointerMove(event: PointerEvent<HTMLDivElement>) {
-    setPointer({ x: event.clientX, y: event.clientY });
-    if (!active) setActive(true);
+    const cards = event.currentTarget.querySelectorAll<HTMLElement>(
+      "[data-spotlight-card]",
+    );
+    cards.forEach((card) => {
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty("--spot-x", `${event.clientX - rect.left}px`);
+      card.style.setProperty("--spot-y", `${event.clientY - rect.top}px`);
+    });
   }
 
   return {
-    pointer,
-    active,
     gridProps: {
+      className: "group/spotlight",
       onPointerMove,
-      onPointerLeave: () => setActive(false),
     },
   };
 }
 
-export function SpotlightGlow({
-  pointer,
-  active,
-  cardRef,
-}: {
-  pointer: GridPointer;
-  active: boolean;
-  cardRef: RefObject<HTMLElement | null>;
-}) {
-  const rect = cardRef.current?.getBoundingClientRect();
-  const localX = rect ? pointer.x - rect.left : 0;
-  const localY = rect ? pointer.y - rect.top : 0;
-
+export function SpotlightGlow() {
   return (
     <span
       aria-hidden
-      className={`pointer-events-none absolute inset-0 transition-opacity duration-300 ${
-        active ? "opacity-100" : "opacity-0"
-      }`}
+      className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/spotlight:opacity-100"
       style={{
-        background: `radial-gradient(420px circle at ${localX}px ${localY}px, rgb(139 92 246 / 0.16), transparent 42%)`,
+        background:
+          "radial-gradient(420px circle at var(--spot-x, 0px) var(--spot-y, 0px), rgb(139 92 246 / 0.16), transparent 42%)",
       }}
     />
   );

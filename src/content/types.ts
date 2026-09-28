@@ -86,6 +86,10 @@ export type PortfolioContent = {
       courseLabel: string;
       languageLabel: string;
     };
+    projects: {
+      visitSite: string;
+      viewCode: string;
+    };
     contact: {
       kicker: string;
       title: string;

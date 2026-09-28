@@ -1,5 +1,6 @@
 "use client";
 
+import { ScrollReveal } from "@/components/scroll-reveal";
 import { useLocale } from "@/i18n/use-locale";
 
 const MIN_LOOP_ITEMS = 16;
@@ -42,8 +43,10 @@ export function StackMarquee() {
 
   return (
     <section aria-label={content.ui.stackAriaLabel} className="py-6">
-      <Track items={content.stackPrimary} direction="right" />
-      <Track items={content.stackSecondary} direction="left" />
+      <ScrollReveal y={16}>
+        <Track items={content.stackPrimary} direction="right" />
+        <Track items={content.stackSecondary} direction="left" />
+      </ScrollReveal>
     </section>
   );
 }

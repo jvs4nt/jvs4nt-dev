@@ -1,6 +1,7 @@
 "use client";
 
 import { BrandMark } from "@/components/brand-mark";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import { useLocale } from "@/i18n/use-locale";
 
 function GitHubIcon() {
@@ -25,7 +26,8 @@ export function ContactFooter() {
 
   return (
     <footer id="contato" className="scroll-mt-24 px-5 pb-10 pt-8">
-      <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-white/10 bg-[#16161f] px-6 py-16 sm:px-12">
+      <ScrollReveal>
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-white/10 bg-[#16161f] px-6 py-16 sm:px-12">
         <p className="font-mono text-xs uppercase tracking-[0.24em] text-accent">
           {ui.contact.kicker}
         </p>
@@ -76,7 +78,8 @@ export function ContactFooter() {
           <BrandMark size={28} className="h-7 w-7" />
           {profile.name} · {profile.city}
         </p>
-      </div>
+        </div>
+      </ScrollReveal>
     </footer>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useSpring } from "motion/react";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import { useLocale } from "@/i18n/use-locale";
 
 export function ExperienceTimeline() {
@@ -31,12 +32,14 @@ export function ExperienceTimeline() {
       id="experiencia"
       className="mx-auto max-w-6xl scroll-mt-24 px-5 py-24"
     >
-      <p className="font-mono text-xs uppercase tracking-[0.24em] text-accent">
-        {content.ui.sections.experience}
-      </p>
-      <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-        {content.ui.sections.experienceTitle}
-      </h2>
+      <ScrollReveal>
+        <p className="font-mono text-xs uppercase tracking-[0.24em] text-accent">
+          {content.ui.sections.experience}
+        </p>
+        <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+          {content.ui.sections.experienceTitle}
+        </h2>
+      </ScrollReveal>
 
       <div ref={ref} className="relative mt-14 pl-8">
         <div
@@ -53,8 +56,12 @@ export function ExperienceTimeline() {
         />
 
         <ol className="relative z-[2] space-y-12">
-          {content.experience.map((job) => (
-            <li key={`${job.company}-${job.period}`} className="relative">
+          {content.experience.map((job, index) => (
+            <ScrollReveal
+              key={`${job.company}-${job.period}`}
+              delay={Math.min(index * 0.06, 0.24)}
+            >
+              <li className="relative">
               <span
                 aria-hidden
                 className="absolute top-1.5 -left-8 h-3.5 w-3.5 rounded-full border-2 border-accent bg-background"
@@ -68,7 +75,8 @@ export function ExperienceTimeline() {
                   <li key={bullet}>{bullet}</li>
                 ))}
               </ul>
-            </li>
+              </li>
+            </ScrollReveal>
           ))}
         </ol>
       </div>

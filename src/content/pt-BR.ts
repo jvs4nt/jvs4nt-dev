@@ -206,6 +206,10 @@ export const ptBR: PortfolioContent = {
       courseLabel: "Curso",
       languageLabel: "Idioma",
     },
+    projects: {
+      visitSite: "Ver projeto",
+      viewCode: "Ver código",
+    },
     contact: {
       kicker: "Contato",
       title: "Vamos conversar?",

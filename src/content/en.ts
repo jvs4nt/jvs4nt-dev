@@ -206,6 +206,10 @@ export const en: PortfolioContent = {
       courseLabel: "Course",
       languageLabel: "Language",
     },
+    projects: {
+      visitSite: "Visit site",
+      viewCode: "View code",
+    },
     contact: {
       kicker: "Contact",
       title: "Shall we talk?",

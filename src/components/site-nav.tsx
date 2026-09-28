@@ -12,14 +12,14 @@ export function SiteNav() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/5 bg-background/70 backdrop-blur-md">
+    <header className="fixed inset-x-0 top-0 z-[60] border-b border-white/5 bg-background/70 backdrop-blur-md">
       <nav
         aria-label={ui.navAriaLabel}
-        className="relative mx-auto flex max-w-6xl items-center justify-between px-5 py-3 md:justify-center md:py-4"
+        className="relative mx-auto flex max-w-6xl items-center justify-between px-5 py-3 lg:justify-center lg:py-4"
       >
         <button
           type="button"
-          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-foreground md:hidden"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-foreground lg:hidden"
           aria-expanded={menuOpen}
           aria-controls="mobile-nav-menu"
           aria-label={menuOpen ? ui.closeMenu : ui.openMenu}
@@ -48,7 +48,7 @@ export function SiteNav() {
           )}
         </button>
 
-        <ul className="hidden items-center gap-8 md:flex">
+        <ul className="hidden items-center gap-8 lg:flex">
           {nav.map((item) => (
             <li key={item.href}>
               <a href={item.href} className="block">
@@ -63,11 +63,11 @@ export function SiteNav() {
           ))}
         </ul>
 
-        <div className="flex items-center gap-2 md:absolute md:right-5">
+        <div className="flex items-center gap-2 lg:absolute lg:right-5">
           <LanguageToggle />
           <a
             href={profile.github}
-            className="rounded-full border border-white/10 px-2.5 py-1.5 font-mono text-[11px] text-foreground transition-colors hover:border-accent hover:text-accent md:px-3 md:text-xs"
+            className="rounded-full border border-white/10 px-2.5 py-1.5 font-mono text-[11px] text-foreground transition-colors hover:border-accent hover:text-accent lg:px-3 lg:text-xs"
             target="_blank"
             rel="noopener noreferrer"
           >

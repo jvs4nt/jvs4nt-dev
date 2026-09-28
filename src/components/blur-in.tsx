@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties, ElementType, ReactNode } from "react";
+import { createElement, type CSSProperties, type ReactNode } from "react";
 
 type BlurInProps = {
   children: ReactNode;
@@ -15,14 +15,16 @@ export function BlurIn({
   className,
   as: Tag = "div",
 }: BlurInProps) {
-  const Component = Tag as ElementType;
   const style = {
     "--blur-in-delay": `${delay}s`,
   } as CSSProperties;
 
-  return (
-    <Component className={["blur-in", className].filter(Boolean).join(" ")} style={style}>
-      {children}
-    </Component>
+  return createElement(
+    Tag,
+    {
+      className: ["blur-in", className].filter(Boolean).join(" "),
+      style,
+    },
+    children,
   );
 }
