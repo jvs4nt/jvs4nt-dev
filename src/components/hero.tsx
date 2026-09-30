@@ -5,7 +5,7 @@ import { useLocale } from "@/i18n/use-locale";
 
 export function Hero() {
   const { content } = useLocale();
-  const { profile } = content;
+  const { profile, ui } = content;
 
   return (
     <RobotHero
@@ -16,6 +16,8 @@ export function Hero() {
       pantallaColor="#8b5cf6"
       pantallaBrillo={1.4}
       metalness={0.2}
+      bootLines={ui.boot.lines}
+      bootSkipHint={ui.boot.skipHint}
     />
   );
 }

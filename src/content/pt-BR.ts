@@ -185,6 +185,14 @@ export const ptBR: PortfolioContent = {
     stackAriaLabel: "Stack",
     heroTagline:
       "TypeScript de ponta a ponta: React, Next.js e Node.js, com banco, autenticação e deploy. Projetos em produção e contato com clientes em português e inglês.",
+    boot: {
+      lines: [
+        "> inicializando jvs4nt.dev...",
+        "> carregando módulos: react, next, node ... ok",
+        "> olá, mundo.",
+      ],
+      skipHint: "clique ou pressione qualquer tecla para pular",
+    },
     languageToggle: {
       groupLabel: "Idioma do site",
       pt: "Português",

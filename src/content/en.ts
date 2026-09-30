@@ -185,6 +185,14 @@ export const en: PortfolioContent = {
     stackAriaLabel: "Stack",
     heroTagline:
       "End-to-end TypeScript: React, Next.js, and Node.js, with database, auth, and deploy. Production products and client work in Portuguese and English.",
+    boot: {
+      lines: [
+        "> initializing jvs4nt.dev...",
+        "> loading modules: react, next, node ... ok",
+        "> hello, world.",
+      ],
+      skipHint: "click or press any key to skip",
+    },
     languageToggle: {
       groupLabel: "Site language",
       pt: "Portuguese",

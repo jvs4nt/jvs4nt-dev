@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-const CHARS = "01アイウエオカキクケコサシスセソタチツテトABCDEF89";
+export const CHARS = "01アイウエオカキクケコサシスセソタチツテトABCDEF89";
 const CELL = 18;
 const RADIUS = 88;
 const SPOT_FONT = `600 ${CELL - 5}px ui-monospace, SFMono-Regular, monospace`;

@@ -13,6 +13,18 @@ import { Environment, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import { motion, useScroll, useTransform } from "motion/react";
 import { ShoppingBag } from "lucide-react";
+import { BootTerminal } from "@/components/ui/boot-terminal";
+import { ScrambleText } from "@/components/ui/scramble-text";
+import {
+  bootPhaseAtLeast,
+  useBootSequence,
+  type BootPhase,
+} from "@/components/ui/use-boot-sequence";
+
+type BootPower = { ramp: number; glow: number; rise: number };
+
+const POWER_RAMP_SECONDS = 1.1;
+const POWER_SKIP_SECONDS = 0.35;
 
 class HeartCurve extends THREE.Curve<THREE.Vector3> {
   constructor() {
@@ -49,10 +61,12 @@ function GlassCapsule({
   color,
   power,
   intensity,
+  powerRef,
 }: {
   color: string;
   power: number;
   intensity: number;
+  powerRef: React.MutableRefObject<BootPower>;
 }) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
@@ -69,7 +83,8 @@ function GlassCapsule({
     if (materialRef.current) {
       materialRef.current.uniforms.color.value.set(color);
       materialRef.current.uniforms.power.value = power;
-      materialRef.current.uniforms.intensity.value = intensity;
+      materialRef.current.uniforms.intensity.value =
+        intensity * powerRef.current.glow;
     }
   });
 
@@ -133,8 +148,10 @@ const antennaStickMat = new THREE.MeshStandardMaterial({
   roughness: 0.4,
   metalness: 0.2,
 });
+const antennaTipOff = new THREE.Color("#1e1e28");
+const antennaTipOn = new THREE.Color("#8b5cf6");
 const antennaTipMat = new THREE.MeshStandardMaterial({
-  color: "#8b5cf6",
+  color: antennaTipOff,
   roughness: 0.2,
   toneMapped: false,
 });
@@ -228,6 +245,7 @@ function RobotEye({
   blinkDuration = 0.15,
   blinkCycle = 3.0,
   isLovedRef,
+  powerRef,
 }: {
   position: [number, number, number];
   rotation: [number, number, number];
@@ -235,6 +253,7 @@ function RobotEye({
   blinkDuration?: number;
   blinkCycle?: number;
   isLovedRef: React.MutableRefObject<boolean>;
+  powerRef: React.MutableRefObject<BootPower>;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const normalEyesRef = useRef<THREE.Group>(null);
@@ -259,6 +278,8 @@ function RobotEye({
 
       targetScaleY = Math.max(0.05, 1.0 - blinkClose);
     }
+
+    targetScaleY *= Math.max(0.05, powerRef.current.rise);
 
     groupRef.current.scale.set(scale, scale * targetScaleY, scale);
   });
@@ -435,6 +456,8 @@ function RobotPrototype({
   pantallaBrillo = 1.2,
   blinkCycle = 3.0,
   metalness = 0.0,
+  bootPhase = "done",
+  bootInstant = true,
 }: {
   neckParams?: Record<string, number>;
   bodyParams?: Record<string, number>;
@@ -443,8 +466,11 @@ function RobotPrototype({
   pantallaBrillo?: number;
   blinkCycle?: number;
   metalness?: number;
+  bootPhase?: BootPhase;
+  bootInstant?: boolean;
 }) {
   const isLovedRef = useRef(false);
+  const powerRef = useRef<BootPower>({ ramp: 0, glow: 0, rise: 0 });
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const bodyRef = useRef<THREE.Group>(null);
   const headRef = useRef<THREE.Group>(null);
@@ -481,9 +507,33 @@ function RobotPrototype({
     if (!bodyRef.current || !headRef.current) return;
 
     const dt = Math.min(delta, 0.1);
+    const power = powerRef.current;
 
-    const tx = state.pointer.x;
-    const ty = state.pointer.y;
+    if (bootInstant) {
+      power.ramp = 1;
+    } else if (bootPhaseAtLeast(bootPhase, "power")) {
+      const seconds =
+        bootPhase === "done" ? POWER_SKIP_SECONDS : POWER_RAMP_SECONDS;
+      power.ramp = Math.min(1, power.ramp + dt / seconds);
+    }
+
+    const t = state.clock.getElapsedTime();
+    const eased = 1 - Math.pow(1 - power.ramp, 3);
+    const flicker =
+      power.ramp > 0 && power.ramp < 0.45 && Math.sin(t * 55) < -0.2 ? 0.15 : 1;
+    power.glow = eased * flicker;
+    power.rise = eased;
+
+    eyeMat.opacity = power.glow;
+    const tipPulse =
+      power.ramp < 1 ? power.glow * (0.5 + 0.5 * Math.abs(Math.sin(t * 9))) : 1;
+    antennaTipMat.color.copy(antennaTipOff).lerp(antennaTipOn, tipPulse);
+
+    bodyRef.current.position.y = THREE.MathUtils.lerp(-0.6, -0.3, power.rise);
+    bodyRef.current.scale.setScalar(0.92 + 0.08 * power.rise);
+
+    const tx = state.pointer.x * power.rise;
+    const ty = state.pointer.y * power.rise;
 
     const maxMoveX = state.viewport.width / 3.5;
     const targetPosX = tx * maxMoveX;
@@ -609,7 +659,6 @@ function RobotPrototype({
   return (
     <group
       ref={bodyRef}
-      position={[0, -0.3, 0]}
       onPointerDown={handlePointerDown}
       onPointerOver={() => (document.body.style.cursor = "pointer")}
       onPointerOut={() => (document.body.style.cursor = "auto")}
@@ -673,6 +722,7 @@ function RobotPrototype({
           color={design.pantallaColor}
           power={design.pantallaGrosor}
           intensity={design.pantallaBrillo}
+          powerRef={powerRef}
         />
 
         <group position={[0, -0.02, 0.29]}>
@@ -683,6 +733,7 @@ function RobotPrototype({
             blinkDuration={design.parpadeoDuracion}
             blinkCycle={design.parpadeoFrecuencia}
             isLovedRef={isLovedRef}
+            powerRef={powerRef}
           />
           <RobotEye
             position={[design.separacionOjos, 0, 0]}
@@ -691,6 +742,7 @@ function RobotPrototype({
             blinkDuration={design.parpadeoDuracion}
             blinkCycle={design.parpadeoFrecuencia}
             isLovedRef={isLovedRef}
+            powerRef={powerRef}
           />
         </group>
 
@@ -740,6 +792,8 @@ export interface RobotHeroProps {
   blinkCycle?: number;
   metalness?: number;
   showNavbar?: boolean;
+  bootLines?: string[];
+  bootSkipHint?: string;
 }
 
 function AntennaNavbar({
@@ -862,8 +916,12 @@ export function RobotHero({
   blinkCycle = 3.0,
   metalness = 0.2,
   showNavbar = false,
+  bootLines = ["> initializing...", "> hello, world."],
+  bootSkipHint = "click or press any key to skip",
 }: RobotHeroProps = {}) {
   const containerRef = useRef<HTMLElement>(null);
+  const boot = useBootSequence();
+  const textRevealed = bootPhaseAtLeast(boot.phase, "reveal");
   const useSplitBackground =
     backgroundTextTop != null && backgroundTextBottom != null;
 
@@ -898,26 +956,29 @@ export function RobotHero({
             aria-hidden
             className="flex flex-col items-center justify-center font-sans font-black select-none"
           >
-            <span
+            <ScrambleText
+              text={backgroundTextTop}
+              active={textRevealed}
+              animate={!boot.instant}
               className="whitespace-nowrap"
               style={{
                 ...backgroundTextBaseStyle,
                 fontSize: "clamp(2rem, 9vw, 11rem)",
                 transform: "translateY(-4vh)",
               }}
-            >
-              {backgroundTextTop}
-            </span>
-            <span
+            />
+            <ScrambleText
+              text={backgroundTextBottom}
+              active={textRevealed}
+              animate={!boot.instant}
+              delay={180}
               className="whitespace-nowrap"
               style={{
                 ...backgroundTextBaseStyle,
                 fontSize: "clamp(2.75rem, 10vw, 14rem)",
                 transform: "translateY(40px)",
               }}
-            >
-              {backgroundTextBottom}
-            </span>
+            />
           </div>
         ) : (
           <h1
@@ -928,7 +989,11 @@ export function RobotHero({
               transform: "translateY(40px)",
             }}
           >
-            {backgroundText}
+            <ScrambleText
+              text={backgroundText}
+              active={textRevealed}
+              animate={!boot.instant}
+            />
           </h1>
         )}
       </div>
@@ -992,6 +1057,8 @@ export function RobotHero({
               pantallaBrillo={pantallaBrillo}
               blinkCycle={blinkCycle}
               metalness={metalness}
+              bootPhase={boot.phase}
+              bootInstant={boot.instant}
             />
           </ResponsiveGroup>
         </Canvas>
@@ -1014,6 +1081,12 @@ export function RobotHero({
           </div>
         </div>
       ) : null}
+
+      <BootTerminal
+        visible={boot.phase === "terminal"}
+        lines={bootLines}
+        skipHint={bootSkipHint}
+      />
     </section>
   );
 }
