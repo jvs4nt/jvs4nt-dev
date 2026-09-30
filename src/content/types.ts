@@ -65,6 +65,11 @@ export type PortfolioContent = {
     github: string;
     stackAriaLabel: string;
     heroTagline: string;
+    hero: {
+      phraseLead: string;
+      phraseAccent: string;
+      cta: string;
+    };
     boot: {
       lines: string[];
       skipHint: string;

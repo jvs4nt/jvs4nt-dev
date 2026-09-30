@@ -1,20 +1,18 @@
 "use client";
 
+import { useMemo, useRef, useState, useEffect, type ReactNode } from "react";
 import {
-  useMemo,
-  useRef,
-  useState,
-  useEffect,
-  type CSSProperties,
-  type ReactNode,
-} from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+  Canvas,
+  useFrame,
+  useThree,
+  type DomEvent,
+  type RootState,
+} from "@react-three/fiber";
 import { Environment, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import { motion, useScroll, useTransform } from "motion/react";
 import { ShoppingBag } from "lucide-react";
 import { BootTerminal } from "@/components/ui/boot-terminal";
-import { ScrambleText } from "@/components/ui/scramble-text";
 import {
   bootPhaseAtLeast,
   useBootSequence,
@@ -44,6 +42,15 @@ class HeartCurve extends THREE.Curve<THREE.Vector3> {
 }
 
 const sharedHeartCurve = new HeartCurve();
+
+const computePointerFromCanvas = (event: DomEvent, state: RootState) => {
+  const rect = state.gl.domElement.getBoundingClientRect();
+  state.pointer.set(
+    ((event.clientX - rect.left) / rect.width) * 2 - 1,
+    -((event.clientY - rect.top) / rect.height) * 2 + 1,
+  );
+  state.raycaster.setFromCamera(state.pointer, state.camera);
+};
 
 function ResponsiveGroup({
   children,
@@ -532,8 +539,8 @@ function RobotPrototype({
     bodyRef.current.position.y = THREE.MathUtils.lerp(-0.6, -0.3, power.rise);
     bodyRef.current.scale.setScalar(0.92 + 0.08 * power.rise);
 
-    const tx = state.pointer.x * power.rise;
-    const ty = state.pointer.y * power.rise;
+    const tx = THREE.MathUtils.clamp(state.pointer.x, -1, 1) * power.rise;
+    const ty = THREE.MathUtils.clamp(state.pointer.y, -1, 1) * power.rise;
 
     const maxMoveX = state.viewport.width / 3.5;
     const targetPosX = tx * maxMoveX;
@@ -767,17 +774,9 @@ export interface RobotHeroNavItem {
   target?: string;
 }
 
-const backgroundTextBaseStyle: CSSProperties = {
-  color: "#8b5cf6",
-  opacity: 0.1,
-  letterSpacing: "-0.05em",
-  lineHeight: 1,
-};
-
 export interface RobotHeroProps {
-  backgroundText?: string;
-  backgroundTextTop?: string;
-  backgroundTextBottom?: string;
+  backdrop?: ReactNode;
+  intro?: (state: { revealed: boolean; instant: boolean }) => ReactNode;
   navItemsLeft?: RobotHeroNavItem[];
   contactText?: string;
   contactHref?: string;
@@ -894,9 +893,8 @@ function AntennaNavbar({
 }
 
 export function RobotHero({
-  backgroundText = "UITHEFACTORY",
-  backgroundTextTop,
-  backgroundTextBottom,
+  backdrop,
+  intro,
   navItemsLeft = [
     { label: "Product", href: "#" },
     { label: "About", href: "#" },
@@ -921,14 +919,9 @@ export function RobotHero({
 }: RobotHeroProps = {}) {
   const containerRef = useRef<HTMLElement>(null);
   const boot = useBootSequence();
-  const textRevealed = bootPhaseAtLeast(boot.phase, "reveal");
-  const useSplitBackground =
-    backgroundTextTop != null && backgroundTextBottom != null;
+  const contentRevealed = bootPhaseAtLeast(boot.phase, "reveal");
 
   const entorno = {
-    fondoArriba: "#07070b",
-    fondoMedio: "#0b0b12",
-    fondoAbajo: "#07070b",
     luzAmbiente: 0.55,
     luzPrincipal: 0.35,
     luzPrincipalColor: "#8b5cf6",
@@ -942,126 +935,124 @@ export function RobotHero({
     <section
       id="topo"
       ref={containerRef}
-      className="relative h-dvh min-h-[600px] w-full overflow-hidden bg-background pt-16 lg:pt-20"
-      style={{
-        background: `radial-gradient(ellipse 80% 50% at 50% -10%, rgb(139 92 246 / 0.16), transparent 55%), linear-gradient(to bottom, ${entorno.fondoArriba} 0%, ${entorno.fondoArriba} 55%, ${entorno.fondoMedio} 72%, ${entorno.fondoAbajo} 88%, ${entorno.fondoAbajo} 100%)`,
-      }}
+      className={
+        intro
+          ? "relative min-h-dvh w-full overflow-hidden pt-16 lg:h-dvh lg:min-h-[600px] lg:pt-20"
+          : "relative h-dvh min-h-[600px] w-full overflow-hidden pt-16 lg:pt-20"
+      }
     >
       <div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden"
-        style={{ zIndex: 0 }}
+        className={
+          intro
+            ? "relative mx-auto grid h-full w-full max-w-6xl gap-4 px-5 pb-10 pt-10 lg:grid-cols-2 lg:items-center lg:gap-0 lg:py-0"
+            : "relative h-full w-full"
+        }
       >
-        {useSplitBackground ? (
-          <div
-            aria-hidden
-            className="flex flex-col items-center justify-center font-sans font-black select-none"
-          >
-            <ScrambleText
-              text={backgroundTextTop}
-              active={textRevealed}
-              animate={!boot.instant}
-              className="whitespace-nowrap"
-              style={{
-                ...backgroundTextBaseStyle,
-                fontSize: "clamp(2rem, 9vw, 11rem)",
-                transform: "translateY(-4vh)",
-              }}
-            />
-            <ScrambleText
-              text={backgroundTextBottom}
-              active={textRevealed}
-              animate={!boot.instant}
-              delay={180}
-              className="whitespace-nowrap"
-              style={{
-                ...backgroundTextBaseStyle,
-                fontSize: "clamp(2.75rem, 10vw, 14rem)",
-                transform: "translateY(40px)",
-              }}
-            />
+        {intro ? (
+          <div className="relative z-20">
+            {intro({ revealed: contentRevealed, instant: boot.instant })}
           </div>
-        ) : (
-          <h1
-            className="font-sans font-black select-none whitespace-nowrap"
-            style={{
-              ...backgroundTextBaseStyle,
-              fontSize: "clamp(2.75rem, 11vw, 14rem)",
-              transform: "translateY(40px)",
-            }}
-          >
-            <ScrambleText
-              text={backgroundText}
-              active={textRevealed}
-              animate={!boot.instant}
-            />
-          </h1>
-        )}
-      </div>
+        ) : null}
 
-      <div className="absolute inset-0 z-10">
-        <Canvas shadows camera={{ position: [0, 0.2, 6], fov: 40 }}>
-          <ambientLight intensity={entorno.luzAmbiente} color="#ffffff" />
+        <div
+          className={intro ? "relative h-[55vh] lg:h-full" : "relative h-full"}
+        >
+          {backdrop ? (
+            <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center px-6 opacity-30 lg:pointer-events-auto lg:opacity-60">
+              <motion.div
+                className={
+                  intro ? "w-full max-w-xl" : "w-full max-w-xl lg:max-w-3xl"
+                }
+                initial={false}
+                animate={
+                  contentRevealed
+                    ? { opacity: 1, scale: 1, filter: "blur(0px)" }
+                    : { opacity: 0, scale: 0.9, filter: "blur(8px)" }
+                }
+                transition={
+                  boot.instant
+                    ? { duration: 0 }
+                    : { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+                }
+              >
+                {backdrop}
+              </motion.div>
+            </div>
+          ) : null}
 
-          <directionalLight
-            position={[0, 6, 3]}
-            intensity={entorno.luzPrincipal}
-            color={entorno.luzPrincipalColor}
-            castShadow
-            shadow-mapSize={[2048, 2048]}
-            shadow-bias={-0.0005}
-          >
-            <orthographicCamera
-              attach="shadow-camera"
-              args={[-1.5, 1.5, 1.5, -1.5, 0.1, 20]}
-            />
-          </directionalLight>
+          <div className="absolute inset-0 z-10">
+            <Canvas
+              shadows
+              camera={{ position: [0, 0.2, 6], fov: 40 }}
+              eventSource={containerRef}
+              onCreated={(state) =>
+                state.setEvents({ compute: computePointerFromCanvas })
+              }
+            >
+              <ambientLight intensity={entorno.luzAmbiente} color="#ffffff" />
 
-          <directionalLight
-            position={[-5, 2, -5]}
-            intensity={entorno.luzRelleno}
-            color={entorno.luzRellenoColor}
-          />
+              <directionalLight
+                position={[0, 6, 3]}
+                intensity={entorno.luzPrincipal}
+                color={entorno.luzPrincipalColor}
+                castShadow
+                shadow-mapSize={[2048, 2048]}
+                shadow-bias={-0.0005}
+              >
+                <orthographicCamera
+                  attach="shadow-camera"
+                  args={[-1.5, 1.5, 1.5, -1.5, 0.1, 20]}
+                />
+              </directionalLight>
 
-          <Environment preset="studio" blur={0.5} />
+              <directionalLight
+                position={[-5, 2, -5]}
+                intensity={entorno.luzRelleno}
+                color={entorno.luzRellenoColor}
+              />
 
-          <ResponsiveGroup scale={scale}>
-            <ContactShadows
-              position={[0, -0.79, 0]}
-              opacity={entorno.sombraOpacidad}
-              scale={15}
-              resolution={1024}
-              blur={entorno.sombraBlur}
-              far={2.5}
-              color="#000000"
-            />
-            <RobotPrototype
-              neckParams={{
-                baseR: 0.215,
-                baseH: -0.05,
-                midR: 0.28,
-                midH: 0.02,
-                lipBottomR: 0.295,
-                lipBottomH: 0.045,
-                lipTopR: 0.27,
-                lipTopH: 0.055,
-                innerR: 0.1,
-                innerDropH: 0.0,
-              }}
-              bodyParams={{
-                bodyBevelR: 0.235,
-                bodyBevelY: 0.34,
-                bodyBevelT: 0.025,
-              }}
-              color={color}
-              pantallaColor={pantallaColor}
-              pantallaBrillo={pantallaBrillo}
-              blinkCycle={blinkCycle}
-              metalness={metalness}
-              bootPhase={boot.phase}
-              bootInstant={boot.instant}
-            />
-          </ResponsiveGroup>
-        </Canvas>
+              <Environment preset="studio" blur={0.5} />
+
+              <ResponsiveGroup scale={scale}>
+                <ContactShadows
+                  position={[0, -0.79, 0]}
+                  opacity={entorno.sombraOpacidad}
+                  scale={15}
+                  resolution={1024}
+                  blur={entorno.sombraBlur}
+                  far={2.5}
+                  color="#000000"
+                />
+                <RobotPrototype
+                  neckParams={{
+                    baseR: 0.215,
+                    baseH: -0.05,
+                    midR: 0.28,
+                    midH: 0.02,
+                    lipBottomR: 0.295,
+                    lipBottomH: 0.045,
+                    lipTopR: 0.27,
+                    lipTopH: 0.055,
+                    innerR: 0.1,
+                    innerDropH: 0.0,
+                  }}
+                  bodyParams={{
+                    bodyBevelR: 0.235,
+                    bodyBevelY: 0.34,
+                    bodyBevelT: 0.025,
+                  }}
+                  color={color}
+                  pantallaColor={pantallaColor}
+                  pantallaBrillo={pantallaBrillo}
+                  blinkCycle={blinkCycle}
+                  metalness={metalness}
+                  bootPhase={boot.phase}
+                  bootInstant={boot.instant}
+                />
+              </ResponsiveGroup>
+            </Canvas>
+          </div>
+        </div>
       </div>
 
       {showNavbar ? (

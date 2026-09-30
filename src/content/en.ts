@@ -185,6 +185,11 @@ export const en: PortfolioContent = {
     stackAriaLabel: "Stack",
     heroTagline:
       "End-to-end TypeScript: React, Next.js, and Node.js, with database, auth, and deploy. Production products and client work in Portuguese and English.",
+    hero: {
+      phraseLead: "Clean code.",
+      phraseAccent: "Real product.",
+      cta: "See my work",
+    },
     boot: {
       lines: [
         "> initializing jvs4nt.dev...",

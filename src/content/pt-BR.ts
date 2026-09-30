@@ -185,6 +185,11 @@ export const ptBR: PortfolioContent = {
     stackAriaLabel: "Stack",
     heroTagline:
       "TypeScript de ponta a ponta: React, Next.js e Node.js, com banco, autenticação e deploy. Projetos em produção e contato com clientes em português e inglês.",
+    hero: {
+      phraseLead: "Código limpo.",
+      phraseAccent: "Produto real.",
+      cta: "Conheça meu trabalho",
+    },
     boot: {
       lines: [
         "> inicializando jvs4nt.dev...",
