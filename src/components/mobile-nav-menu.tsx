@@ -4,17 +4,20 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { NavItem } from "@/content";
+import { cn } from "@/lib/utils";
 
 export function MobileNavMenu({
   open,
   onClose,
   nav,
+  activeHref,
   title,
   closeLabel,
 }: {
   open: boolean;
   onClose: () => void;
   nav: NavItem[];
+  activeHref: string | null;
   title: string;
   closeLabel: string;
 }) {
@@ -105,9 +108,23 @@ export function MobileNavMenu({
                     <a
                       href={item.href}
                       onClick={onClose}
-                      className="block py-3 text-4xl font-semibold tracking-tight text-foreground"
+                      aria-current={
+                        item.href === activeHref ? "location" : undefined
+                      }
+                      className={cn(
+                        "flex items-center gap-4 py-3 text-4xl font-semibold tracking-tight",
+                        item.href === activeHref
+                          ? "text-accent"
+                          : "text-foreground",
+                      )}
                     >
                       {item.label}
+                      {item.href === activeHref ? (
+                        <span
+                          aria-hidden
+                          className="h-0.5 w-8 rounded-full bg-accent shadow-[0_0_10px_rgba(139,92,246,0.7)]"
+                        />
+                      ) : null}
                     </a>
                   </motion.li>
                 ))}

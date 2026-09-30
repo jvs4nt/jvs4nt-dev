@@ -1,15 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { LanguageToggle } from "@/components/language-toggle";
 import { MobileNavMenu } from "@/components/mobile-nav-menu";
 import { RandomLetterSwap } from "@/components/ui/random-letter-swap";
+import { useActiveSection } from "@/components/use-active-section";
 import { useLocale } from "@/i18n/use-locale";
+import { cn } from "@/lib/utils";
 
 export function SiteNav() {
   const { content } = useLocale();
   const { profile, nav, ui } = content;
   const [menuOpen, setMenuOpen] = useState(false);
+  const active = useActiveSection(nav.map((item) => item.href));
+  const reduceMotion = useReducedMotion();
+  const indicatorTransition = reduceMotion
+    ? { duration: 0 }
+    : { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const };
 
   return (
     <header className="fixed inset-x-0 top-0 z-[60] border-b border-white/5 bg-background/70 backdrop-blur-md">
@@ -49,18 +57,40 @@ export function SiteNav() {
         </button>
 
         <ul className="hidden items-center gap-8 lg:flex">
-          {nav.map((item) => (
-            <li key={item.href}>
-              <a href={item.href} className="block">
-                <RandomLetterSwap
-                  className="cursor-pointer font-medium text-sm text-muted hover:text-foreground"
-                  label={item.label}
-                  staggerDuration={0.025}
-                  transition={{ duration: 0.6, type: "spring" }}
-                />
-              </a>
-            </li>
-          ))}
+          {nav.map((item) => {
+            const isActive = item.href === active;
+            return (
+              <li key={item.href} className="relative">
+                <a
+                  href={item.href}
+                  className="block"
+                  aria-current={isActive ? "location" : undefined}
+                >
+                  <RandomLetterSwap
+                    className={cn(
+                      "cursor-pointer font-medium text-sm transition-colors hover:text-foreground",
+                      isActive ? "text-foreground" : "text-muted",
+                    )}
+                    label={item.label}
+                    staggerDuration={0.025}
+                    transition={{ duration: 0.6, type: "spring" }}
+                  />
+                </a>
+                <AnimatePresence>
+                  {isActive ? (
+                    <motion.span
+                      aria-hidden
+                      className="absolute inset-x-0 -bottom-2 h-0.5 origin-center rounded-full bg-accent shadow-[0_0_10px_rgba(139,92,246,0.7)]"
+                      initial={{ scaleX: 0, opacity: 0 }}
+                      animate={{ scaleX: 1, opacity: 1 }}
+                      exit={{ scaleX: 0, opacity: 0 }}
+                      transition={indicatorTransition}
+                    />
+                  ) : null}
+                </AnimatePresence>
+              </li>
+            );
+          })}
         </ul>
 
         <div className="flex items-center gap-2 lg:absolute lg:right-5">
@@ -81,6 +111,7 @@ export function SiteNav() {
           open={menuOpen}
           onClose={() => setMenuOpen(false)}
           nav={nav}
+          activeHref={active}
           title={ui.mobileMenuAriaLabel}
           closeLabel={ui.closeMenu}
         />
