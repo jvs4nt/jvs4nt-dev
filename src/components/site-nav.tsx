@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { LanguageToggle } from "@/components/language-toggle";
 import { MobileNavMenu } from "@/components/mobile-nav-menu";
+import { ScrollProgress } from "@/components/scroll-progress";
 import { RandomLetterSwap } from "@/components/ui/random-letter-swap";
 import { useActiveSection } from "@/components/use-active-section";
 import { useLocale } from "@/i18n/use-locale";
@@ -105,6 +106,8 @@ export function SiteNav() {
           </a>
         </div>
       </nav>
+
+      <ScrollProgress />
 
       <div id="mobile-nav-menu">
         <MobileNavMenu

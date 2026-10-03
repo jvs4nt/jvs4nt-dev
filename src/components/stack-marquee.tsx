@@ -20,17 +20,18 @@ function Track({
   const loop = loopItems(items);
 
   return (
-    <div className="overflow-hidden border-y border-white/5 py-4">
+    <div className="marquee-mask overflow-hidden border-y border-white/5 py-4">
       <ul
         className={`flex w-max gap-10 ${direction === "right" ? "marquee-track-reverse" : "marquee-track"}`}
       >
         {loop.map((item, index) => (
           <li
             key={`${item}-${index}`}
-            className="font-mono text-sm uppercase tracking-[0.2em] text-muted"
+            className="flex items-center gap-10 font-mono text-sm uppercase tracking-[0.2em] text-muted transition-colors duration-200 hover:text-foreground"
             aria-hidden={index >= items.length}
           >
             {item}
+            <span aria-hidden className="h-1 w-1 rounded-full bg-accent/50" />
           </li>
         ))}
       </ul>

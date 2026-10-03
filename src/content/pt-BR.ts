@@ -37,6 +37,7 @@ export const ptBR: PortfolioContent = {
       title: "Desenvolvedor Full-Stack Senior",
       company: "14Mob",
       period: "Abr/2025 — atual",
+      current: true,
       bullets: [
         "Desenvolvimento e manutenção de sistemas com spec-driven development e ferramentas de IA.",
         "Apps TypeScript de ponta a ponta: auth, PostgreSQL, dashboards e deploy contínuo.",
@@ -87,6 +88,7 @@ export const ptBR: PortfolioContent = {
       href: "https://dream-planner-xi.vercel.app",
       hrefLabel: "dream-planner-xi.vercel.app",
       span: "wide",
+      preview: "dreamplanner",
     },
     {
       name: "Conduit",
@@ -96,6 +98,7 @@ export const ptBR: PortfolioContent = {
       href: "https://conduit-mu-six.vercel.app",
       hrefLabel: "conduit-mu-six.vercel.app",
       span: "normal",
+      preview: "conduit",
     },
     {
       name: "FinTrack",
@@ -105,6 +108,7 @@ export const ptBR: PortfolioContent = {
       href: "https://github.com/jvs4nt/fintrack",
       hrefLabel: "github.com/jvs4nt/fintrack",
       span: "normal",
+      preview: "fintrack",
     },
     {
       name: "DCC-CLI",
@@ -112,6 +116,7 @@ export const ptBR: PortfolioContent = {
         "CLI em TypeScript que varre o workspace, gera contexto .ai/ por persona e dispara o Cursor Agent com controle de orçamento de tokens.",
       stack: "TypeScript · Commander · Cursor Agent",
       span: "wide",
+      preview: "cli",
     },
   ],
   education: [
@@ -189,6 +194,7 @@ export const ptBR: PortfolioContent = {
       phraseLead: "Código limpo.",
       phraseAccent: "Produto real.",
       cta: "Conheça meu trabalho",
+      ctaProjects: "Ver projetos",
     },
     boot: {
       lines: [
@@ -215,6 +221,9 @@ export const ptBR: PortfolioContent = {
       education: "Formação",
       educationTitle: "Estudo e idiomas",
     },
+    experience: {
+      current: "Atual",
+    },
     education: {
       courseLabel: "Curso",
       languageLabel: "Idioma",
@@ -222,11 +231,14 @@ export const ptBR: PortfolioContent = {
     projects: {
       visitSite: "Ver projeto",
       viewCode: "Ver código",
+      previewHint: "Interativo",
     },
     contact: {
       kicker: "Contato",
       title: "Vamos conversar?",
       body: "Aberto a projetos, conversas e oportunidades em TypeScript de ponta a ponta.",
+      copyEmail: "Copiar e-mail",
+      copied: "Copiado!",
     },
   },
 };

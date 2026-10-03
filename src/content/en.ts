@@ -37,6 +37,7 @@ export const en: PortfolioContent = {
       title: "Senior Full-Stack Developer",
       company: "14Mob",
       period: "Apr/2025 — present",
+      current: true,
       bullets: [
         "Building and maintaining systems with spec-driven development and AI tooling.",
         "End-to-end TypeScript apps: auth, PostgreSQL, dashboards, and continuous deploy.",
@@ -87,6 +88,7 @@ export const en: PortfolioContent = {
       href: "https://dream-planner-xi.vercel.app",
       hrefLabel: "dream-planner-xi.vercel.app",
       span: "wide",
+      preview: "dreamplanner",
     },
     {
       name: "Conduit",
@@ -96,6 +98,7 @@ export const en: PortfolioContent = {
       href: "https://conduit-mu-six.vercel.app",
       hrefLabel: "conduit-mu-six.vercel.app",
       span: "normal",
+      preview: "conduit",
     },
     {
       name: "FinTrack",
@@ -105,6 +108,7 @@ export const en: PortfolioContent = {
       href: "https://github.com/jvs4nt/fintrack",
       hrefLabel: "github.com/jvs4nt/fintrack",
       span: "normal",
+      preview: "fintrack",
     },
     {
       name: "DCC-CLI",
@@ -112,6 +116,7 @@ export const en: PortfolioContent = {
         "TypeScript CLI that scans the workspace, generates .ai/ context per persona, and runs the Cursor Agent with a token budget.",
       stack: "TypeScript · Commander · Cursor Agent",
       span: "wide",
+      preview: "cli",
     },
   ],
   education: [
@@ -189,6 +194,7 @@ export const en: PortfolioContent = {
       phraseLead: "Clean code.",
       phraseAccent: "Real product.",
       cta: "See my work",
+      ctaProjects: "View projects",
     },
     boot: {
       lines: [
@@ -215,6 +221,9 @@ export const en: PortfolioContent = {
       education: "Education",
       educationTitle: "Study and languages",
     },
+    experience: {
+      current: "Current",
+    },
     education: {
       courseLabel: "Course",
       languageLabel: "Language",
@@ -222,11 +231,14 @@ export const en: PortfolioContent = {
     projects: {
       visitSite: "Visit site",
       viewCode: "View code",
+      previewHint: "Interactive",
     },
     contact: {
       kicker: "Contact",
       title: "Shall we talk?",
       body: "Open to projects, conversations, and opportunities in end-to-end TypeScript.",
+      copyEmail: "Copy email",
+      copied: "Copied!",
     },
   },
 };

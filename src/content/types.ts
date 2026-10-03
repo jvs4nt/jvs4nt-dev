@@ -3,7 +3,10 @@ export type ExperienceItem = {
   company: string;
   period: string;
   bullets: string[];
+  current?: boolean;
 };
+
+export type ProjectPreviewId = "dreamplanner" | "conduit" | "fintrack" | "cli";
 
 export type ProjectItem = {
   name: string;
@@ -12,6 +15,7 @@ export type ProjectItem = {
   href?: string;
   hrefLabel?: string;
   span: "wide" | "normal";
+  preview: ProjectPreviewId;
 };
 
 export type EducationItem = {
@@ -69,6 +73,7 @@ export type PortfolioContent = {
       phraseLead: string;
       phraseAccent: string;
       cta: string;
+      ctaProjects: string;
     };
     boot: {
       lines: string[];
@@ -91,6 +96,9 @@ export type PortfolioContent = {
       education: string;
       educationTitle: string;
     };
+    experience: {
+      current: string;
+    };
     education: {
       courseLabel: string;
       languageLabel: string;
@@ -98,11 +106,14 @@ export type PortfolioContent = {
     projects: {
       visitSite: string;
       viewCode: string;
+      previewHint: string;
     };
     contact: {
       kicker: string;
       title: string;
       body: string;
+      copyEmail: string;
+      copied: string;
     };
   };
 };

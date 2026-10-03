@@ -3,13 +3,14 @@
 import type { ReactNode } from "react";
 import { SpotlightGlow, useGridPointer } from "@/components/spotlight-grid";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { SectionHeading } from "@/components/section-heading";
 import { useLocale } from "@/i18n/use-locale";
 
 function EducationCard({ children }: { children: ReactNode }) {
   return (
     <article
       data-spotlight-card
-      className="relative h-full overflow-hidden rounded-3xl border border-white/10 bg-card p-6"
+      className="relative h-full overflow-hidden rounded-3xl border border-white/10 bg-card p-6 transition-[transform,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-accent/30 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
     >
       <SpotlightGlow />
       <div className="relative z-[1]">{children}</div>
@@ -26,14 +27,10 @@ export function Education() {
       id="formacao"
       className="mx-auto max-w-6xl scroll-mt-24 px-5 py-24"
     >
-      <ScrollReveal>
-        <p className="font-mono text-xs uppercase tracking-[0.24em] text-accent">
-          {content.ui.sections.education}
-        </p>
-        <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-          {content.ui.sections.educationTitle}
-        </h2>
-      </ScrollReveal>
+      <SectionHeading
+        kicker={content.ui.sections.education}
+        title={content.ui.sections.educationTitle}
+      />
       <div
         {...gridProps}
         className={`mt-12 grid gap-6 md:grid-cols-2 ${gridProps.className}`}

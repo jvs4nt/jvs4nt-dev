@@ -126,13 +126,44 @@ body::before {
   animation: marquee-right 32s linear infinite;
 }
 
+.marquee-mask {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 12%,
+    black 88%,
+    transparent
+  );
+}
+
+.marquee-mask:hover .marquee-track,
+.marquee-mask:hover .marquee-track-reverse {
+  animation-play-state: paused;
+}
+
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(-12%, 10%, 0) scale(1.15);
+  }
+}
+
+.aurora-drift {
+  animation: aurora-drift 14s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 
   .blur-in,
-  .boot-cursor {
+  .boot-cursor,
+  .aurora-drift {
     animation: none;
   }
 

@@ -33,4 +33,5 @@ export type {
   LanguageItem,
   NavItem,
   ProjectItem,
+  ProjectPreviewId,
 } from "@/content/types";

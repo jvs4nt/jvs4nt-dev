@@ -1,7 +1,8 @@
 "use client";
 
 import { motion, type Variants } from "motion/react";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, ArrowUpRight, LayoutGrid } from "lucide-react";
+import { Magnetic } from "@/components/magnetic";
 import { useLocale } from "@/i18n/use-locale";
 
 const STAGGER = 0.08;
@@ -81,21 +82,41 @@ export function HeroIntro({
         {ui.heroTagline}
       </motion.p>
 
-      <motion.a
+      <motion.div
         custom={4}
         variants={itemVariants}
         initial={false}
         animate={animate}
-        href="#sobre"
-        className="group mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] transition-colors hover:bg-[#7c4fe0]"
+        className="mt-8 flex flex-wrap items-center justify-center gap-3 lg:justify-start"
       >
-        {ui.hero.cta}
-        <ArrowDown
-          size={16}
-          aria-hidden
-          className="transition-transform duration-300 group-hover:translate-y-0.5"
-        />
-      </motion.a>
+        <Magnetic>
+          <a
+            href="#sobre"
+            className="group inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] transition-[background-color,box-shadow] hover:bg-[#7c4fe0] hover:shadow-[0_0_32px_rgba(139,92,246,0.6)]"
+          >
+            {ui.hero.cta}
+            <ArrowDown
+              size={16}
+              aria-hidden
+              className="transition-transform duration-300 group-hover:translate-y-0.5"
+            />
+          </a>
+        </Magnetic>
+        <Magnetic strength={0.2}>
+          <a
+            href="#projetos"
+            className="group inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.03] px-6 py-3 text-sm font-medium text-foreground backdrop-blur-sm transition-colors hover:border-accent hover:text-accent"
+          >
+            <LayoutGrid size={15} aria-hidden />
+            {ui.hero.ctaProjects}
+            <ArrowUpRight
+              size={15}
+              aria-hidden
+              className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            />
+          </a>
+        </Magnetic>
+      </motion.div>
     </div>
   );
 }
