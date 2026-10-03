@@ -1,6 +1,14 @@
 "use client";
 
-import { useMemo, useRef, useState, useEffect, type ReactNode } from "react";
+import {
+  Component,
+  useMemo,
+  useRef,
+  useState,
+  useEffect,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import {
   Canvas,
   useFrame,
@@ -20,6 +28,54 @@ import {
 } from "@/components/ui/use-boot-sequence";
 
 type BootPower = { ramp: number; glow: number; rise: number };
+
+let webglSupport: boolean | null = null;
+
+function detectWebGL() {
+  if (webglSupport !== null) return webglSupport;
+  try {
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
+    webglSupport = gl !== null;
+    gl?.getExtension("WEBGL_lose_context")?.loseContext();
+  } catch {
+    webglSupport = false;
+  }
+  return webglSupport;
+}
+
+const subscribeNoop = () => () => {};
+
+function useWebGLAvailable() {
+  return useSyncExternalStore(subscribeNoop, detectWebGL, () => false);
+}
+
+// Without this boundary a WebGL failure takes down the whole page.
+class CanvasErrorBoundary extends Component<
+  { children: ReactNode; fallback: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
+}
+
+function RobotFallback() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 flex items-center justify-center"
+    >
+      <div className="h-48 w-48 rounded-full bg-accent/20 blur-3xl" />
+    </div>
+  );
+}
 
 const POWER_RAMP_SECONDS = 1.1;
 const POWER_SKIP_SECONDS = 0.35;
@@ -918,6 +974,7 @@ export function RobotHero({
   bootSkipHint = "click or press any key to skip",
 }: RobotHeroProps = {}) {
   const containerRef = useRef<HTMLElement>(null);
+  const webglAvailable = useWebGLAvailable();
   const boot = useBootSequence();
   const contentRevealed = bootPhaseAtLeast(boot.phase, "reveal");
 
@@ -981,76 +1038,82 @@ export function RobotHero({
           ) : null}
 
           <div className="absolute inset-0 z-10">
-            <Canvas
-              shadows
-              camera={{ position: [0, 0.2, 6], fov: 40 }}
-              eventSource={containerRef}
-              onCreated={(state) =>
-                state.setEvents({ compute: computePointerFromCanvas })
-              }
-            >
-              <ambientLight intensity={entorno.luzAmbiente} color="#ffffff" />
+            {webglAvailable ? (
+              <CanvasErrorBoundary fallback={<RobotFallback />}>
+                <Canvas
+                  shadows
+                  camera={{ position: [0, 0.2, 6], fov: 40 }}
+                  eventSource={containerRef}
+                  onCreated={(state) =>
+                    state.setEvents({ compute: computePointerFromCanvas })
+                  }
+                >
+                  <ambientLight intensity={entorno.luzAmbiente} color="#ffffff" />
 
-              <directionalLight
-                position={[0, 6, 3]}
-                intensity={entorno.luzPrincipal}
-                color={entorno.luzPrincipalColor}
-                castShadow
-                shadow-mapSize={[2048, 2048]}
-                shadow-bias={-0.0005}
-              >
-                <orthographicCamera
-                  attach="shadow-camera"
-                  args={[-1.5, 1.5, 1.5, -1.5, 0.1, 20]}
-                />
-              </directionalLight>
+                  <directionalLight
+                    position={[0, 6, 3]}
+                    intensity={entorno.luzPrincipal}
+                    color={entorno.luzPrincipalColor}
+                    castShadow
+                    shadow-mapSize={[2048, 2048]}
+                    shadow-bias={-0.0005}
+                  >
+                    <orthographicCamera
+                      attach="shadow-camera"
+                      args={[-1.5, 1.5, 1.5, -1.5, 0.1, 20]}
+                    />
+                  </directionalLight>
 
-              <directionalLight
-                position={[-5, 2, -5]}
-                intensity={entorno.luzRelleno}
-                color={entorno.luzRellenoColor}
-              />
+                  <directionalLight
+                    position={[-5, 2, -5]}
+                    intensity={entorno.luzRelleno}
+                    color={entorno.luzRellenoColor}
+                  />
 
-              <Environment preset="studio" blur={0.5} />
+                  <Environment preset="studio" blur={0.5} />
 
-              <ResponsiveGroup scale={scale}>
-                <ContactShadows
-                  position={[0, -0.79, 0]}
-                  opacity={entorno.sombraOpacidad}
-                  scale={15}
-                  resolution={1024}
-                  blur={entorno.sombraBlur}
-                  far={2.5}
-                  color="#000000"
-                />
-                <RobotPrototype
-                  neckParams={{
-                    baseR: 0.215,
-                    baseH: -0.05,
-                    midR: 0.28,
-                    midH: 0.02,
-                    lipBottomR: 0.295,
-                    lipBottomH: 0.045,
-                    lipTopR: 0.27,
-                    lipTopH: 0.055,
-                    innerR: 0.1,
-                    innerDropH: 0.0,
-                  }}
-                  bodyParams={{
-                    bodyBevelR: 0.235,
-                    bodyBevelY: 0.34,
-                    bodyBevelT: 0.025,
-                  }}
-                  color={color}
-                  pantallaColor={pantallaColor}
-                  pantallaBrillo={pantallaBrillo}
-                  blinkCycle={blinkCycle}
-                  metalness={metalness}
-                  bootPhase={boot.phase}
-                  bootInstant={boot.instant}
-                />
-              </ResponsiveGroup>
-            </Canvas>
+                  <ResponsiveGroup scale={scale}>
+                    <ContactShadows
+                      position={[0, -0.79, 0]}
+                      opacity={entorno.sombraOpacidad}
+                      scale={15}
+                      resolution={1024}
+                      blur={entorno.sombraBlur}
+                      far={2.5}
+                      color="#000000"
+                    />
+                    <RobotPrototype
+                      neckParams={{
+                        baseR: 0.215,
+                        baseH: -0.05,
+                        midR: 0.28,
+                        midH: 0.02,
+                        lipBottomR: 0.295,
+                        lipBottomH: 0.045,
+                        lipTopR: 0.27,
+                        lipTopH: 0.055,
+                        innerR: 0.1,
+                        innerDropH: 0.0,
+                      }}
+                      bodyParams={{
+                        bodyBevelR: 0.235,
+                        bodyBevelY: 0.34,
+                        bodyBevelT: 0.025,
+                      }}
+                      color={color}
+                      pantallaColor={pantallaColor}
+                      pantallaBrillo={pantallaBrillo}
+                      blinkCycle={blinkCycle}
+                      metalness={metalness}
+                      bootPhase={boot.phase}
+                      bootInstant={boot.instant}
+                    />
+                  </ResponsiveGroup>
+                </Canvas>
+              </CanvasErrorBoundary>
+            ) : (
+              <RobotFallback />
+            )}
           </div>
         </div>
       </div>
